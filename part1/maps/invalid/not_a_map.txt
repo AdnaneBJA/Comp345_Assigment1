@@ -1,0 +1,4 @@
+This is a plain text file, not a Domination map.
+It has no sections at all, so the loader must reject it without crashing.
+1 2 3 4 5
+[not a section]

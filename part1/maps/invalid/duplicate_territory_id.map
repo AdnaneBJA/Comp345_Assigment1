@@ -1,0 +1,16 @@
+; INVALID (loader): two territories share id 2.
+
+[continents]
+North 3 red
+South 2 blue
+
+[countries]
+1 Alpha 1 10 10
+2 Bravo 1 20 10
+2 Charlie 2 10 20
+4 Delta 2 20 20
+
+[borders]
+1 2
+2 1 4
+4 2

@@ -1,0 +1,11 @@
+; INVALID (loader): the required [borders] section is missing.
+
+[continents]
+North 3 red
+South 2 blue
+
+[countries]
+1 Alpha 1 10 10
+2 Bravo 1 20 10
+3 Charlie 2 10 20
+4 Delta 2 20 20

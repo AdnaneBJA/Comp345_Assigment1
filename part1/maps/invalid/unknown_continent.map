@@ -1,0 +1,17 @@
+; INVALID (loader): Delta (4) belongs to continent 9, which does not exist.
+
+[continents]
+North 3 red
+South 2 blue
+
+[countries]
+1 Alpha 1 10 10
+2 Bravo 1 20 10
+3 Charlie 2 10 20
+4 Delta 9 20 20
+
+[borders]
+1 2 3
+2 1
+3 1 4
+4 3
