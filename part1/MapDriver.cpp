@@ -22,12 +22,54 @@
 #define MAPS_DIR "part1/maps/"
 #endif
 
-// One map file to test and whether it is expected to be accepted.
+// One map file to test and whether it is expected to be accepted. Every data
+// member is a pointer, owned (and deleted) by the test case.
 struct MapTestCase {
-    std::string file;
-    std::string description;
-    bool expected_valid;
+    std::string* file;
+    std::string* description;
+    bool* expected_valid;
+
+    MapTestCase(const std::string& file, const std::string& description, bool expected_valid);
+    ~MapTestCase();
+    MapTestCase(const MapTestCase& obj);
+    MapTestCase& operator=(const MapTestCase& other);
 };
+
+// Constructor: allocates the file path, its description and the expected result.
+MapTestCase::MapTestCase(const std::string& file, const std::string& description, const bool expected_valid)
+    : file(new std::string(file)),
+      description(new std::string(description)),
+      expected_valid(new bool(expected_valid)) {}
+
+// Destructor: deletes the values this test case owns.
+MapTestCase::~MapTestCase() {
+    delete file;
+    delete description;
+    delete expected_valid;
+}
+
+// Copy constructor: deep-copies the values into new memory.
+MapTestCase::MapTestCase(const MapTestCase& obj)
+    : file(new std::string(*obj.file)),
+      description(new std::string(*obj.description)),
+      expected_valid(new bool(*obj.expected_valid)) {}
+
+// Assignment operator: copies the other test case's values into this test case's own memory.
+MapTestCase& MapTestCase::operator=(const MapTestCase& other) {
+    if (this != &other) {
+        *file = *other.file;
+        *description = *other.description;
+        *expected_valid = *other.expected_valid;
+    }
+
+    return *this;
+}
+
+// Stream insertion: prints the file, whether it should be valid, and why.
+std::ostream& operator<<(std::ostream& os, const MapTestCase& test) {
+    os << *test.file << " (expected " << (*test.expected_valid ? "valid" : "invalid") << ": " << *test.description << ")";
+    return os;
+}
 
 // Prints a horizontal separator line.
 void printSeparator() {
@@ -39,10 +81,10 @@ void printSeparator() {
 // before returning.
 bool testMapFile(MapLoader& loader, const std::string& maps_dir, const MapTestCase& test) {
     printSeparator();
-    std::cout << "FILE:     " << test.file << std::endl;
-    std::cout << "EXPECTED: " << (test.expected_valid ? "valid" : "invalid") << " (" << test.description << ")" << std::endl;
+    std::cout << "FILE:     " << *test.file << std::endl;
+    std::cout << "EXPECTED: " << (*test.expected_valid ? "valid" : "invalid") << " (" << *test.description << ")" << std::endl;
 
-    Map* map = loader.load_map(maps_dir + test.file);
+    Map* map = loader.load_map(maps_dir + *test.file);
 
     if (map == nullptr) {
         std::cout << "RESULT:   REJECTED by the map loader" << std::endl;
@@ -163,9 +205,9 @@ int main(int argc, char* argv[]) {
     int unexpected = 0;
 
     for (std::size_t i = 0; i < tests.size(); i++) {
-        const bool matches = results[i] == tests[i].expected_valid;
+        const bool matches = results[i] == *tests[i].expected_valid;
 
-        std::cout << (results[i] ? "  VALID     " : "  REJECTED  ") << tests[i].file;
+        std::cout << (results[i] ? "  VALID     " : "  REJECTED  ") << *tests[i].file;
         if (!matches) {
             std::cout << "   <-- UNEXPECTED";
             unexpected++;
