@@ -15,42 +15,64 @@
 // Territory
 // =============================================================================
 
-// Stream insertion: prints the territory's id, name, continent id and coordinates.
+// Stream insertion: prints the territory's id, name, continent id, coordinates and armies.
 std::ostream& operator<<(std::ostream& os, const Territory& territory) {
-    os << "Territory ID: " << territory.territory_id << ", Name: " << territory.territory_name << ", Continent ID: " << territory.continent_id << ", X: " << territory.x << ", Y: " << territory.y << ", Armies: " << territory.armies;
+    os << "Territory ID: " << *territory.territory_id << ", Name: " << *territory.territory_name << ", Continent ID: " << *territory.continent_id << ", X: " << *territory.x << ", Y: " << *territory.y << ", Armies: " << *territory.armies;
     return os;
 }
 
-// Default constructor: all fields keep their in-class default values.
-Territory::Territory() = default;
+// Default constructor: allocates every value with its default and starts with
+// no continent, no player and no neighbors.
+Territory::Territory()
+    : territory_id(new int(0)),
+      territory_name(new std::string("DEFAULT_TERRITORY")),
+      continent_id(new int(0)),
+      continent(nullptr),
+      x(new int(0)),
+      y(new int(0)),
+      armies(new int(0)),
+      player(nullptr),
+      neighbors(new std::vector<Territory*>()) {}
 
-// Destructor: deletes nothing. The continent, player and neighbors are owned by
-// the Map (or the game), so deleting them here would cause double deletes.
-Territory::~Territory() = default;
+// Destructor: deletes the values this territory owns. The continent, player and
+// neighboring territories are owned by the Map (or the game), so deleting them
+// here would cause double deletes.
+Territory::~Territory() {
+    delete territory_id;
+    delete territory_name;
+    delete continent_id;
+    delete x;
+    delete y;
+    delete armies;
+    delete neighbors;
+}
 
-// Copy constructor: shallow-copies continent, player and neighbors because the
-// Map owns those objects, not the Territory.
+// Copy constructor: deep-copies the values into new memory. The continent,
+// player and neighbor pointers are copied as-is because the Map owns those objects.
 Territory::Territory(const Territory& obj)
-     : territory_id(obj.territory_id),
-       territory_name(obj.territory_name),
-       continent_id(obj.continent_id),
-       continent(obj.continent),
-       x(obj.x),
-       y(obj.y),
-       player(obj.player),
-       neighbors(obj.neighbors) {} // copies the pointers, not the territories
+    : territory_id(new int(*obj.territory_id)),
+      territory_name(new std::string(*obj.territory_name)),
+      continent_id(new int(*obj.continent_id)),
+      continent(obj.continent),
+      x(new int(*obj.x)),
+      y(new int(*obj.y)),
+      armies(new int(*obj.armies)),
+      player(obj.player),
+      neighbors(new std::vector<Territory*>(*obj.neighbors)) {} // copies the pointers, not the territories
 
-// Assignment operator: shallow-copies every field, like the copy constructor.
+// Assignment operator: copies the other territory's values into this territory's
+// own memory, and its continent, player and neighbor pointers, like the copy constructor.
 Territory &Territory::operator=(const Territory& other) {
     if (this != &other) {
-        territory_id = other.territory_id;
-        territory_name = other.territory_name;
-        continent_id = other.continent_id;
+        *territory_id = *other.territory_id;
+        *territory_name = *other.territory_name;
+        *continent_id = *other.continent_id;
         continent = other.continent;
-        x = other.x;
-        y = other.y;
+        *x = *other.x;
+        *y = *other.y;
+        *armies = *other.armies;
         player = other.player;
-        neighbors = other.neighbors;
+        *neighbors = *other.neighbors;
     }
 
     return *this;
@@ -58,27 +80,27 @@ Territory &Territory::operator=(const Territory& other) {
 
 // Sets the territory's id, as read from the [countries] section.
 void Territory::setTerritoryId(const int n) {
-    territory_id = n;
+    *territory_id = n;
 }
 
 // Sets the territory's name.
 void Territory::setTerritoryName(std::string n) {
-    territory_name = std::move(n);
+    *territory_name = std::move(n);
 }
 
 // Sets the id of the continent this territory belongs to.
 void Territory::setContinentId(const int n) {
-    continent_id = n;
+    *continent_id = n;
 }
 
 // Sets the x coordinate used to draw the territory.
 void Territory::setX(const int newX) {
-    x = newX;
+    *x = newX;
 }
 
 // Sets the y coordinate used to draw the territory.
 void Territory::setY(const int newY) {
-    y = newY;
+    *y = newY;
 }
 
 // Sets the continent this territory belongs to.
@@ -93,36 +115,36 @@ Continent* Territory::getContinent() const {
 
 // Returns the territory's id.
 int Territory::getId() const {
-    return territory_id;
+    return *territory_id;
 }
 
 // Returns the id of the continent this territory belongs to.
 int Territory::getContinentId() const {
-    return continent_id;
+    return *continent_id;
 }
 
 // Adds an edge from this territory to an adjacent territory.
 void Territory::addNeighbor(Territory *territory) {
-    neighbors.push_back(territory);
+    neighbors->push_back(territory);
 }
 
 // Prints every adjacent territory (debugging helper).
 void Territory::printNeighbors() {
-    std::cout << "PRINTING NEIGHBORS FOR: " << territory_name << std::endl;
-    for (Territory* territory: neighbors) {
+    std::cout << "PRINTING NEIGHBORS FOR: " << *territory_name << std::endl;
+    for (Territory* territory: *neighbors) {
         std::cout << *territory << std::endl;
     }
     std::cout << "END OF NEIGHBORS" << std::endl;
 }
 
-// Returns the adjacent territories.
+// Returns a copy of the list of adjacent territories.
 std::vector<Territory*> Territory::getNeighbors() {
-    return neighbors;
+    return *neighbors;
 }
 
 // Replaces the adjacent territories (used by the Map deep copy).
 void Territory::setNeighbors(std::vector<Territory*> n) {
-    neighbors = std::move(n);
+    *neighbors = std::move(n);
 }
 
 // =============================================================================
@@ -131,33 +153,46 @@ void Territory::setNeighbors(std::vector<Territory*> n) {
 
 // Stream insertion: prints the continent's id, name, control bonus and color.
 std::ostream& operator<<(std::ostream& os, const Continent& continent) {
-    os <<  "ID: " << continent.continent_id <<", Continent Name: " << continent.name << ", Control Bonus: " << continent.control_bonus << ", Color: " << continent.color;
+    os <<  "ID: " << *continent.continent_id <<", Continent Name: " << *continent.name << ", Control Bonus: " << *continent.control_bonus << ", Color: " << *continent.color;
     return os;
 }
 
-// Default constructor: all fields keep their in-class default values.
-Continent::Continent() = default;
+// Default constructor: allocates every value with its default and an empty territory list.
+Continent::Continent()
+    : continent_id(new int(0)),
+      control_bonus(new int(0)),
+      name(new std::string("CONTINENT")),
+      color(new std::string("DEFAULT")),
+      territories(new std::vector<Territory*>()) {}
 
-// Destructor: deletes nothing. The territories are owned by the Map.
-Continent::~Continent() = default;
+// Destructor: deletes the values and the territory list this continent owns.
+// The territories themselves are owned by the Map.
+Continent::~Continent() {
+    delete continent_id;
+    delete control_bonus;
+    delete name;
+    delete color;
+    delete territories;
+}
 
-// Copy constructor: shallow-copies the territory pointers because the Map
-// owns the territories, not the Continent.
+// Copy constructor: deep-copies the values into new memory. The territory
+// pointers are copied as-is because the Map owns the territories.
 Continent::Continent(const Continent& obj)
-    : continent_id(obj.continent_id),
-      control_bonus(obj.control_bonus),
-      name(obj.name),
-      color(obj.color),
-      territories(obj.territories) {}
+    : continent_id(new int(*obj.continent_id)),
+      control_bonus(new int(*obj.control_bonus)),
+      name(new std::string(*obj.name)),
+      color(new std::string(*obj.color)),
+      territories(new std::vector<Territory*>(*obj.territories)) {}
 
-// Assignment operator: shallow-copies the territory pointers, like the copy constructor.
+// Assignment operator: copies the other continent's values and territory
+// pointers into this continent's own memory, like the copy constructor.
 Continent& Continent::operator=(const Continent& other) {
     if (this != &other) {
-        continent_id = other.continent_id;
-        control_bonus = other.control_bonus;
-        name = other.name;
-        color = other.color;
-        territories = other.territories;
+        *continent_id = *other.continent_id;
+        *control_bonus = *other.control_bonus;
+        *name = *other.name;
+        *color = *other.color;
+        *territories = *other.territories;
     }
 
     return *this;
@@ -165,47 +200,47 @@ Continent& Continent::operator=(const Continent& other) {
 
 // Sets the continent's name.
 void Continent::setName(std::string n) {
-    name = std::move(n);
+    *name = std::move(n);
 }
 
 // Sets the bonus armies given to the player who controls the whole continent.
 void Continent::setControlBonus(const int n) {
-    control_bonus = n;
+    *control_bonus = n;
 }
 
 // Sets the color used to draw the continent.
 void Continent::setColor(std::string c) {
-    color = std::move(c);
+    *color = std::move(c);
 }
 
 // Sets the continent's id (its 1-based position in the [continents] section).
 void Continent::setContinentId(const int n) {
-    continent_id = n;
+    *continent_id = n;
 }
 
 // Returns the continent's id.
 int Continent::getContinentId() const {
-    return continent_id;
+    return *continent_id;
 }
 
 // Returns the continent's name.
 std::string Continent::getName() {
-    return name;
+    return *name;
 }
 
 // Adds a territory to this continent.
 void Continent::addTerritory(Territory *territory) {
-    territories.push_back(territory);
+    territories->push_back(territory);
 }
 
-// Returns the territories of this continent.
+// Returns a copy of the list of territories of this continent.
 std::vector<Territory *> Continent::getTerritories() {
-    return territories;
+    return *territories;
 }
 
 // Replaces the territories of this continent (used by the Map deep copy).
 void Continent::setTerritories(std::vector<Territory*> t) {
-    territories = std::move(t);
+    *territories = std::move(t);
 }
 
 // =============================================================================
@@ -214,8 +249,8 @@ void Continent::setTerritories(std::vector<Territory*> t) {
 
 // Stream insertion: prints the map size, then each continent followed by its territories.
 std::ostream& operator<<(std::ostream& os, const Map& map) {
-    os << "Map: " << map.continents.size() << " continents, " << map.territories.size() << " territories";
-    for (Continent* continent: map.continents) {
+    os << "Map: " << map.continents->size() << " continents, " << map.territories->size() << " territories";
+    for (Continent* continent: *map.continents) {
         os << "\n  " << *continent;
         for (const Territory* territory: continent->getTerritories()) {
             os << "\n    " << *territory;
@@ -225,15 +260,21 @@ std::ostream& operator<<(std::ostream& os, const Map& map) {
 }
 
 // Default constructor: creates an empty map.
-Map::Map() = default;
+Map::Map()
+    : territories(new std::vector<Territory*>()),
+      continents(new std::vector<Continent*>()) {}
 
-// Destructor: the Map owns its territories and continents, so it deletes them.
+// Destructor: the Map owns its territories, continents and both lists, so it deletes them.
 Map::~Map() {
     clear();
+    delete territories;
+    delete continents;
 }
 
 // Copy constructor: deep copy of another map.
-Map::Map(const Map& obj) {
+Map::Map(const Map& obj)
+    : territories(new std::vector<Territory*>()),
+      continents(new std::vector<Continent*>()) {
     copyFrom(obj);
 }
 
@@ -248,37 +289,39 @@ Map& Map::operator=(const Map& other) {
 }
 
 // Deletes every territory and continent this map owns and empties both lists.
+// The lists themselves are kept so the map can be reused.
 void Map::clear() {
-    for (const Territory* territory: territories) {
+    for (const Territory* territory: *territories) {
         delete territory;
     }
-    for (const Continent* continent: continents) {
+    for (const Continent* continent: *continents) {
         delete continent;
     }
-    territories.clear();
-    continents.clear();
+    territories->clear();
+    continents->clear();
 }
 
 // Deep copy. The Map owns its territories and continents, so each one is
 // duplicated, then every neighbor/continent/territory pointer in the copies is
-// redirected to the new objects instead of the originals.
+// redirected to the new objects instead of the originals. Both lists must
+// already exist and be empty.
 void Map::copyFrom(const Map& obj) {
     std::map<const Continent*, Continent*> continent_copies;
     std::map<const Territory*, Territory*> territory_copies;
 
-    for (Continent* continent: obj.continents) {
+    for (Continent* continent: *obj.continents) {
         auto* copy = new Continent(*continent);
         continent_copies[continent] = copy;
-        continents.push_back(copy);
+        continents->push_back(copy);
     }
 
-    for (Territory* territory: obj.territories) {
+    for (Territory* territory: *obj.territories) {
         auto* copy = new Territory(*territory);
         territory_copies[territory] = copy;
-        territories.push_back(copy);
+        territories->push_back(copy);
     }
 
-    for (Territory* copy: territories) {
+    for (Territory* copy: *territories) {
         std::vector<Territory*> new_neighbors;
         for (Territory* neighbor: copy->getNeighbors()) {
             new_neighbors.push_back(territory_copies[neighbor]);
@@ -287,7 +330,7 @@ void Map::copyFrom(const Map& obj) {
         copy->setContinent(continent_copies[copy->getContinent()]);
     }
 
-    for (Continent* copy: continents) {
+    for (Continent* copy: *continents) {
         std::vector<Territory*> new_territories;
         for (Territory* territory: copy->getTerritories()) {
             new_territories.push_back(territory_copies[territory]);
@@ -298,12 +341,12 @@ void Map::copyFrom(const Map& obj) {
 
 // Adds a continent to the map. The map takes ownership of it.
 void Map::addContinent(Continent *continent) {
-    continents.push_back(continent);
+    continents->push_back(continent);
 }
 
 // Adds a territory to the map. The map takes ownership of it.
 void Map::addTerritory(Territory *territory) {
-    territories.push_back(territory);
+    territories->push_back(territory);
 }
 
 // Checks that 1) the map is a connected graph, 2) every continent is a connected
@@ -311,14 +354,14 @@ void Map::addTerritory(Territory *territory) {
 // Prints which check failed and returns false on the first failure.
 bool Map::validate() {
     // 1. The whole map is connected: a DFS from any territory reaches all of them.
-    if (territories.empty()) {
+    if (territories->empty()) {
         std::cout << "CHECK 1 FAILED: the map has no territories" << std::endl;
         return false;
     }
 
-    const std::size_t number_of_territories = territories.size();
+    const std::size_t number_of_territories = territories->size();
 
-    Territory* starting_territory = territories[0];
+    Territory* starting_territory = (*territories)[0];
     std::set<Territory*> visited;
 
     dfs(starting_territory, visited);
@@ -329,7 +372,7 @@ bool Map::validate() {
     }
 
     // 2. Each continent is connected: a DFS that stays inside the continent reaches all of its territories.
-    for (Continent* continent: continents) {
+    for (Continent* continent: *continents) {
         const std::size_t expected_size_result = continent->getTerritories().size();
 
         if (continent->getTerritories().empty()) {
@@ -350,10 +393,10 @@ bool Map::validate() {
     }
 
     // 3. Each territory belongs to exactly one continent.
-    for (const Territory* territory: territories) {
+    for (const Territory* territory: *territories) {
         int count = 0;
 
-        for (const Continent* continent: continents) {
+        for (const Continent* continent: *continents) {
             if (territory->getContinentId() == continent->getContinentId()) {
                 count += 1;
             }
@@ -369,14 +412,14 @@ bool Map::validate() {
 
 // Prints every continent of the map.
 void Map::display_continents() {
-    for (const Continent* continent: continents) {
+    for (const Continent* continent: *continents) {
         std::cout << *continent << std::endl;
     }
 }
 
 // Returns the territory with the given id, or nullptr if there is none.
 Territory* Map::get_territory_by_id(const int territory_id) const {
-    for (Territory* territory: territories) {
+    for (Territory* territory: *territories) {
         if (territory_id == territory->getId()) {
             return territory;
         }
@@ -384,14 +427,14 @@ Territory* Map::get_territory_by_id(const int territory_id) const {
     return nullptr;
 }
 
-// Returns the continents of the map.
+// Returns a copy of the list of continents of the map.
 std::vector<Continent*> Map::getContinents() {
-    return continents;
+    return *continents;
 }
 
-// Returns the territories of the map.
+// Returns a copy of the list of territories of the map.
 std::vector<Territory*> Map::getTerritories() {
-    return territories;
+    return *territories;
 }
 
 // Depth-first search that only follows neighbors in the given continent.

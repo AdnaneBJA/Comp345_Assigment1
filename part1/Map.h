@@ -13,20 +13,22 @@ class Continent;
 class Player;
 
 // A node of the map graph. Each territory belongs to one continent, is owned by a
-// player and knows its adjacent territories (the edges of the graph). The Map owns
-// every Territory; a Territory never deletes the objects it points to.
+// player and knows its adjacent territories (the edges of the graph). Every data
+// member is a pointer. A Territory owns (and deletes) its own values (id, name,
+// coordinates, armies, neighbor list), but the Map owns the continents and the
+// neighboring territories, so a Territory never deletes those.
 class Territory {
-    int territory_id = 0;
-    std::string territory_name = "DEFAULT_TERRITORY";
-    int continent_id = 0;
-    Continent* continent = nullptr;
-    int x = 0;
-    int y = 0;
-    int armies = 0;
+    int* territory_id;
+    std::string* territory_name;
+    int* continent_id;
+    Continent* continent;
+    int* x;
+    int* y;
+    int* armies;
 
-    Player* player = nullptr;
+    Player* player;
 
-    std::vector<Territory*> neighbors;
+    std::vector<Territory*>* neighbors;
 
 public:
     friend std::ostream& operator<<(std::ostream& os, const Territory& territory);
@@ -53,14 +55,15 @@ public:
 };
 
 // A group of territories that must form a connected subgraph of the map. Holding
-// every territory of a continent gives its owner the control bonus. The Map owns
-// every Continent; a Continent never deletes its territories.
+// every territory of a continent gives its owner the control bonus. Every data
+// member is a pointer. A Continent owns (and deletes) its own values and its
+// territory list, but the Map owns the territories themselves.
 class Continent {
-    int continent_id = 0;
-    int control_bonus = 0;
-    std::string name = "CONTINENT";
-    std::string color = "DEFAULT";
-    std::vector<Territory*> territories;
+    int* continent_id;
+    int* control_bonus;
+    std::string* name;
+    std::string* color;
+    std::vector<Territory*>* territories;
 
 public:
     friend std::ostream& operator<<(std::ostream& os, const Continent& continent);
@@ -83,11 +86,12 @@ public:
 };
 
 // The game map: a graph whose nodes are territories and whose edges are the
-// adjacencies between them, grouped into continents. The Map owns (and deletes)
-// all of its territories and continents.
+// adjacencies between them, grouped into continents. Every data member is a
+// pointer. The Map owns (and deletes) both lists and all of its territories and
+// continents.
 class Map {
-    std::vector<Territory*> territories;
-    std::vector<Continent*> continents;
+    std::vector<Territory*>* territories;
+    std::vector<Continent*>* continents;
 
     void copyFrom(const Map& other);
     void clear();
