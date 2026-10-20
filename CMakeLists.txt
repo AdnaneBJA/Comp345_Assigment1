@@ -15,5 +15,12 @@ add_executable(MapDriver
 target_compile_definitions(MapDriver PRIVATE MAPS_DIR="${CMAKE_CURRENT_SOURCE_DIR}/part1/maps/")
 
 
+add_executable(CardsDriver
+        part4/Cards.cpp
+        part4/Cards.h
+        part4/CardsDriver.cpp
+)
+
+
 add_executable(MainDriver
         main.cpp)
