@@ -54,13 +54,19 @@ int main() {
 	p2.printTerritories();
 	cout << endl;
 
-
-	// copyng player one
+	// copying player one
 	Player pCopy = Player(p1);
 	cout << "Copied player" << endl;
 	pCopy.printTerritories();
 	cout << endl;
 
+	// assigment operator
+	Player p3;
+	p3 = p2;
+	cout << "assigned Player" << endl;
+	cout << p3 << endl;
+	p3.printTerritories();
+	cout << endl;
 
 	list<Territory> l1toAttack = p1.toAttack();
 	list<Territory> l1ToDefend = p1.toDefend();

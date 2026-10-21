@@ -5,9 +5,9 @@
 #include <iostream>
 using namespace std;
 
-int* Player::counterID = new int(1);
+int* Player::counterID = new int(1); 
 
-// player constrcutor
+// player constructor
 Player::Player() {
 
 	territoriesOfPlayer = new list<Territory>();
@@ -32,6 +32,17 @@ ostream& operator<<(ostream& out, const Player & p) {
 	out << "Player ID " << *p.playerID <<endl;
 	return out;
 
+}
+
+//assignment Operator
+Player& Player::operator=(const Player& p) {
+
+	territoriesOfPlayer = new list<Territory>(*(p.territoriesOfPlayer));
+	cardsOfPlayer = new list<Cards>(*(p.cardsOfPlayer));
+	ordersOfPlayer = new list<Order>(*(p.ordersOfPlayer));
+	playerID = new int(*(p.playerID));
+
+	return *this;
 }
 
 

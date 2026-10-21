@@ -14,9 +14,10 @@ class Player {
 	public:
 		Player();
 		Player(const Player &p);
+		Player &operator=(const Player& p);
 		static int* counterID;
 
-
+			
 		list<Territory>* getListOfTerritories();
 		list<Cards>* getListofCards();
 
