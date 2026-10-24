@@ -58,4 +58,4 @@ private:
 	std::vector<Card*>* cards;
 };
 
-#endif //COMP345_ASSIGNMENT1_CARDS_H
+#endif
