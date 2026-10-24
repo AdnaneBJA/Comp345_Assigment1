@@ -7,7 +7,7 @@
 
 Card::Card(CardType type) : type(new CardType(type)) {} //initialize directly with new Cardtype (no intermediate value)
 
-Card::~Card() {
+Card::~Card() { //Destructor, it deletes the card's type this prevents memory leaks.
     delete type;
 }
 
@@ -39,7 +39,7 @@ CardType Card::getType() const {
 
 // Plays the card: adds the matching order to the orders list and then moves the
 // card from the hand back to the deck.
-/*void Card::play(Hand* hand, Deck* deck, OrdersList* orders) {
+void Card::play(Hand* hand, Deck* deck, OrdersList* orders) {
     switch (*type) {
     case CardType::Bomb:          orders->add(new Bomb()); break;
     case CardType::Reinforcement: orders->add(new Deploy()); break;
@@ -51,18 +51,20 @@ CardType Card::getType() const {
     hand->removeCard(this);
     deck->addCard(this);
     std::cout << "Played " << *this << std::endl;
-}*/
+}
 
 //////////////////////////////////////Hand class implementation/////////////////////////////////////////////////
 
-
+//This constructor creates an empty hand.
  Hand::Hand() : cards(new std::vector<Card*>()) {}
  
+ //This is the destructor.
  Hand::~Hand() {
      for (Card* card : *cards) delete card; //delete each card in the vector and then delete the vector
      delete cards;
  }
 
+ //Copy constructor creates a new vector and copies each card of the other hand into it.
  Hand::Hand(const Hand& other)
  {
 	 cards = new std::vector<Card*>();
@@ -115,20 +117,23 @@ CardType Card::getType() const {
      }
  }
 
+ //This is the destructor.
  Deck::~Deck() {
-     for (Card* card : *cards) delete card;
+     for (Card* card : *cards) delete card; //delete each card in the vector and then delete the vector
      delete cards;
  }
 
+ //Copy Constructor, creates a new vector and copies each card of the other deck into it.
  Deck::Deck(const Deck& otherDeck) {
 
      cards = new std::vector<Card*>();
      for (Card* card : *otherDeck.cards)
      {
-         cards->push_back(new Card(*card));
+         cards->push_back(new Card(*card)); //deep copy of each card
      }
  }
 
+ // Assignment operator, deletes this deck's cards, then copies each card of the other deck.
  Deck& Deck::operator=(const Deck& other)
  { 
      if(this != &other)
@@ -141,6 +146,7 @@ CardType Card::getType() const {
      return *this;
  }
 
+ //prints every card in the deck.
  std::ostream& operator<<(std::ostream& os, const Deck& deck)
  {
      os << "Deck:";
@@ -148,17 +154,20 @@ CardType Card::getType() const {
 
      return os;
  }
-
+ 
+ // Add a card to the deck
  void Deck::addCard(Card* card)
  {
      cards->push_back(card);
  }
 
+ // remove a card from the deck without deleting it
  void Deck::removeCard(Card* card)
  {
      cards->erase(std::remove(cards->begin(), cards->end(), card), cards->end());
  }
 
+ // Moves a random card from the deck to the hand. Does nothing if the deck is empty.
  void Deck::draw(Hand* hand)
  {
      if (cards->empty()) {

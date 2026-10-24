@@ -4,9 +4,16 @@
 #define COMP345_ASSIGNMENT1_CARDS_H
 #include <iostream>
 #include <vector>
+#include "Orders.h"
 
+//I declared them before because cards doesnt see hand or deck.
+class Hand;        // defined below
+class Deck;        // defined below
+
+// The five kinds of Warzone cards.
 enum class CardType{ Bomb, Reinforcement, Blockade, Airlift, Diplomacy };
 
+// A card of one of the five types. Playing it creates the matching order.
 class Card {
 public:
 	Card(CardType type);
@@ -15,12 +22,12 @@ public:
 	Card& operator=(const Card& other);
 	friend std::ostream& operator<<(std::ostream& os, const Card& card);
 	CardType getType() const;
-	void setType(CardType type);
-	void play();
+	void play(Hand* hand, Deck* deck, OrdersList* orders);
 private:
 	CardType* type;
 };
 
+// The cards a player is holding.
 class Hand {
 public:
 	Hand();
@@ -36,6 +43,7 @@ private:
 	std::vector<Card*>* cards;
 };
 
+// The pile of cards players draw from.
 class Deck {
 public:
 	Deck();
