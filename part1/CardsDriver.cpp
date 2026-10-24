@@ -23,7 +23,7 @@ int main() {
     std::cout << "\n=== 4. Result ===" << std::endl;
     std::cout << hand << "   <- empty, every card was played" << std::endl;
     std::cout << deck << "   <- the played cards are back in the deck" << std::endl;
-    std::cout << "Orders created by the cards: " << orders << std::endl;
+    std::cout << "Orders created by the cards: \n" << orders << std::endl;
  
     return 0;
 }
