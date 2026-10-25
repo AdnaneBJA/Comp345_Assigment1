@@ -1,27 +1,34 @@
 #include "GameEngine.h"
 
 // Default constructor
-GameEngine::GameEngine() : currentState(State::Start) {}
+GameEngine::GameEngine() {
+    currentState = new State(State::Start);
+}
 
 // Copy constructor
-GameEngine::GameEngine(const GameEngine& other)
-    : currentState(other.currentState) {}
+GameEngine::GameEngine(const GameEngine& other) {
+    currentState = new State(*other.currentState);
+}
 
 // Assignment opperator
 GameEngine& GameEngine::operator=(const GameEngine& other) {
     if (this != &other) {
-        currentState = other.currentState;
+        *currentState = *other.currentState;
     }
+
     return *this;
 }
 
 // Destructor
-GameEngine::~GameEngine() = default;
+GameEngine::~GameEngine() {
+    delete currentState;
+}
 
 // Return current state as enum value
 GameEngine::State GameEngine::getState() const {
-    return currentState;
+    return *currentState;
 }
+
 // Convert each state into displayable text
 std::string GameEngine::stateName(State state) {
     switch (state) {
@@ -39,13 +46,13 @@ std::string GameEngine::stateName(State state) {
 }
 // Get readable name of state
 std::string GameEngine::getStateName() const {
-    return stateName(currentState);
+    return stateName(*currentState);
 }
 
 // Implements the labeled edges in the Assignment 1 diagram
 // No actual map loading or creations yet
 bool GameEngine::nextState(const std::string& command, State& result) const {
-    switch (currentState) {
+    switch (*currentState) {
     case State::Start:
         if (command == "loadmap") { result = State::MapLoaded; return true; }
         break;
@@ -84,7 +91,7 @@ bool GameEngine::nextState(const std::string& command, State& result) const {
 
 // Accepts valid commands to update the state and reject invalid commands then print the result, does not change the current state
 bool GameEngine::processCommand(const std::string& command) {
-    State destination = currentState;
+    State destination = *currentState;
     if (!nextState(command, destination)) {
         std::cout << "Invalid command '" << command
                   << "' in state '" << getStateName() << "'. State unchanged.\n";
@@ -92,7 +99,7 @@ bool GameEngine::processCommand(const std::string& command) {
     }
 
     const std::string previous = getStateName();
-    currentState = destination;
+    *currentState = destination;
     std::cout << "Command accepted: " << command << "\n"
               << "Transition: " << previous << " -> " << getStateName() << "\n";
     return true;
@@ -100,7 +107,7 @@ bool GameEngine::processCommand(const std::string& command) {
 
 
 bool GameEngine::isFinished() const {
-    return currentState == State::End;
+    return *currentState == State::End;
 }
 
 // Print the current state of the engine
