@@ -1,4 +1,6 @@
-#pragma once
+#ifndef PLAYER_H
+#define PLAYER_H
+
 #include <list>
 #include <string>
 using namespace std; 
@@ -14,26 +16,33 @@ class Player {
 	public:
 		Player();
 		Player(const Player &p);
+		~Player();
 		Player &operator=(const Player& p);
 		static int* counterID;
 
-			
-		list<Territory>* getListOfTerritories();
+		//getters	
+		list<Territory*>* getListOfTerritories();
 		list<Cards>* getListofCards();
 
-		list<Territory> toDefend();
-		list<Territory> toAttack();
-		void issueOrder();
+		// needed methods
+		list<Territory*> toDefend();
+		list<Territory*> toAttack();
+		void issueOrder(string input);
 
+		// additional methods
 		friend ostream& operator<<(ostream& out, const Player& p);
 		void printTerritories();
-		void printTerritories(list<Territory> inputList);
-		void addTerritory(Territory terr);
+		void printTerritories(list<Territory*> inputList);
+		void addTerritory(Territory& terr);
+		void addCard(Cards input);
+		void printCards();
+		void printOrders();
+		void deleteTerritories();
 
 	// attributes
 	private:
 		// setting a list of void pointers so to have more flexibility for later implementations
-		list<Territory>* territoriesOfPlayer;
+		list<Territory*>* territoriesOfPlayer;
 		list<Cards>* cardsOfPlayer;
 		list<Order>* ordersOfPlayer;
 		int* playerID;
@@ -46,11 +55,13 @@ class Territory {
 public:
 	string* name;
 	int* armies;
-	list<Territory>* neighbours;
+	list<Territory*>* neighbours;
 	int* owner;
 
 	Territory();
-	Territory(string* name);
+	Territory(const Territory &terr);
+	Territory(string name);
+	void customDestructorTerritory();
 	Territory(int* id, string* name, int* armies, list<Territory>* neighbours, Player* player);
 
 };
@@ -58,15 +69,22 @@ public:
 // temporary Cards logic
 class Cards {
 public:
-	string* name;
+	string* type;
 	Cards();
-	Cards(string* name);
+	Cards(string input);
+	~Cards();
 
 };
 
 // temporary Order logic
 class Order {
-private:
+public:
 		string* type;
-		Order(string* type);
+		Order(string input);
+		~Order();
 };
+
+
+#endif // PLAYER_H
+
+
