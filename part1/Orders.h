@@ -5,13 +5,14 @@
 #include <string>
 #include <vector>
 
+// Every data member is a pointer (assignment rule 1): created with new, freed in the destructor.
 
-// Order: 
+// Order: abstract parent of every order type
 class Order {
 public:
     Order();
     Order(const Order& other);
-    virtual ~Order();  //deleting an Order* also runs the subclass destructor
+    virtual ~Order();  // deleting an Order* also runs the subclass destructor
     Order& operator=(const Order& other);
 
     virtual bool validate() const = 0;
@@ -29,8 +30,8 @@ protected:
     void setEffect(std::string effectText);
 
 private:
-    bool executed;
-    std::string effect;  // what the order did, set on execute
+    bool* executed;
+    std::string* effect;  // what the order did, set on execute
 };
 
 // Deploy armies from the reinforcement pool onto one of the player's territories.
@@ -51,8 +52,8 @@ public:
     friend std::ostream& operator<<(std::ostream& out, const Deploy& order);
 
 private:
-    int armies;
-    std::string targetTerritory;
+    int* armies;
+    std::string* targetTerritory;
 };
 
 // Advance to move armies to a neighbouring territory (attack if enemy-owned).
@@ -73,9 +74,9 @@ public:
     friend std::ostream& operator<<(std::ostream& out, const Advance& order);
 
 private:
-    int armies;
-    std::string sourceTerritory;
-    std::string targetTerritory;
+    int* armies;
+    std::string* sourceTerritory;
+    std::string* targetTerritory;
 };
 
 // Bomb which destroy half the armies on an enemy territory.
@@ -96,7 +97,7 @@ public:
     friend std::ostream& operator<<(std::ostream& out, const Bomb& order);
 
 private:
-    std::string targetTerritory;
+    std::string* targetTerritory;
 };
 
 // Blockade triple armies on own territory, then it becomes neutral.
@@ -117,7 +118,7 @@ public:
     friend std::ostream& operator<<(std::ostream& out, const Blockade& order);
 
 private:
-    std::string targetTerritory;
+    std::string* targetTerritory;
 };
 
 // Airlift move armies between any two own territories (airlift card).
@@ -138,9 +139,9 @@ public:
     friend std::ostream& operator<<(std::ostream& out, const Airlift& order);
 
 private:
-    int armies;
-    std::string sourceTerritory;
-    std::string targetTerritory;
+    int* armies;
+    std::string* sourceTerritory;
+    std::string* targetTerritory;
 };
 
 // Negotiate no attacks between two players this turn (diplomacy card).
@@ -161,7 +162,7 @@ public:
     friend std::ostream& operator<<(std::ostream& out, const Negotiate& order);
 
 private:
-    std::string targetPlayer;
+    std::string* targetPlayer;
 };
 
 // OrdersList a player's orders for the turn. Owns its orders (deletes them).
@@ -176,7 +177,7 @@ public:
     bool remove(int index);         // false if index doesn't exist
     bool move(int from, int to);    // false if either index doesn't exist
     int size() const;
-    Order* get(int index) const;    // nullptr if index doesn't exist
+    Order* get(int index) const;    // NULL if index doesn't exist
 
     friend std::ostream& operator<<(std::ostream& out, const OrdersList& list);
 
