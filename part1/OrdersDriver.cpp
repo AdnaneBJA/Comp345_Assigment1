@@ -8,7 +8,7 @@ using namespace std;
 void testOrdersLists() {
     cout << "===== Part 3: Orders list =====" << endl << endl;
 
-    // Create one of each kind + invalid + extra 
+    // Create one of each kind + invalid + extra
     OrdersList list;
     list.add(new Deploy(5, "Quebec"));
     list.add(new Advance(3, "Quebec", "Ontario"));
@@ -16,7 +16,7 @@ void testOrdersLists() {
     list.add(new Blockade("Greenland"));
     list.add(new Airlift(4, "Quebec", "Alberta"));
     list.add(new Negotiate("Player 2"));
-    list.add(new Deploy(0, "Ontario"));             // invalid because of 0, cant deploy anything that is 0
+    list.add(new Deploy(0, "Ontario"));             // invalid because of 0, can't deploy 0 armies
     list.add(new Advance(2, "Ontario", "Quebec"));  // extra, removed below
 
     cout << "Orders list after adding one order of each kind, one invalid order and one extra order:" << endl;
@@ -46,7 +46,7 @@ void testOrdersLists() {
     list.remove(7);
     cout << list << endl;
 
-    // Bad indices: rejected, no crash
+    // Bad indices rejected, no crash
     cout << "Trying to move order 42 and to remove order -1:" << endl;
     if (list.move(42, 0)) {
         cout << "  move(42, 0) returned true" << endl;
@@ -62,10 +62,10 @@ void testOrdersLists() {
     }
     cout << endl;
 
-    // copy constructor
-    OrdersList copiedList(list);  
+    // Copies with copy constructor and assignment operator
+    OrdersList copiedList(list);
     OrdersList assignedList;
-    assignedList = list;          
+    assignedList = list;
     copiedList.remove(0);
 
     cout << "Copy made with the copy constructor, then its first order removed:" << endl;
@@ -75,7 +75,7 @@ void testOrdersLists() {
     cout << "Original list (unchanged by the copies):" << endl;
     cout << list << endl;
 
-    // Execute valid ones get an effect, invalid ones do nothing
+    // Execute, valid ones get an effect, invalid ones do nothing
     cout << "Executing every order in the original list:" << endl;
     for (int i = 0; i < list.size(); i++) {
         Order* order = list.get(i);

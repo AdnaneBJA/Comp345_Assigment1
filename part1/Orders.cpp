@@ -5,13 +5,13 @@ using namespace std;
 
 // Order
 
-// Default constructor: not executed yet
+// Default constructor not executed yet
 Order::Order() {
     this->executed = new bool(false);
     this->effect = new string("");
 }
 
-// Copy constructor: new values, copied from other, deep copy
+// Copy constructor new values, copied from other, deep copy
 Order::Order(const Order& other) {
     this->executed = new bool(*other.executed);
     this->effect = new string(*other.effect);
@@ -34,12 +34,12 @@ Order& Order::operator=(const Order& other) {
     return *this;
 }
 
-// Getter: executed
+// Getter executed
 bool Order::isExecuted() const {
     return *executed;
 }
 
-// Getter: effect
+// Getter effect
 string Order::getEffect() const {
     return *effect;
 }
@@ -73,7 +73,7 @@ Deploy::Deploy(int armies, string targetTerritory) {
     this->targetTerritory = new string(targetTerritory);
 }
 
-// Copy constructor 
+// Copy constructor
 Deploy::Deploy(const Deploy& other) : Order(other) {
     this->armies = new int(*other.armies);
     this->targetTerritory = new string(*other.targetTerritory);
@@ -130,7 +130,7 @@ string Deploy::describe() const {
     return "deploy " + to_string(*armies) + " armies to " + *targetTerritory;
 }
 
-// Print (same as Order)
+// Print, same as Order
 ostream& operator<<(ostream& out, const Deploy& order) {
     const Order& asOrder = order;
     out << asOrder;
@@ -160,7 +160,7 @@ Advance::Advance(const Advance& other) : Order(other) {
     this->targetTerritory = new string(*other.targetTerritory);
 }
 
-// Destructor: free members, set to NULL for no no dangling pointers
+// Destructor free members, set to NULL for no dangling pointers
 Advance::~Advance() {
     delete armies;
     armies = NULL;
@@ -228,7 +228,7 @@ ostream& operator<<(ostream& out, const Advance& order) {
 
 // Bomb
 
-// Default constructor 
+// Default constructor
 Bomb::Bomb() {
     this->targetTerritory = new string("");
 }
@@ -243,7 +243,7 @@ Bomb::Bomb(const Bomb& other) : Order(other) {
     this->targetTerritory = new string(*other.targetTerritory);
 }
 
-// Destructor: free members, set to NULL for no no dangling pointers
+// Destructor free members, set to NULL for no dangling pointers
 Bomb::~Bomb() {
     delete targetTerritory;
     targetTerritory = NULL;
@@ -258,7 +258,7 @@ Bomb& Bomb::operator=(const Bomb& other) {
     return *this;
 }
 
-// Valid: territory given
+// Valid territory given
 bool Bomb::validate() const {
     if (*targetTerritory == "") {
         return false;
@@ -312,7 +312,7 @@ Blockade::Blockade(const Blockade& other) : Order(other) {
     this->targetTerritory = new string(*other.targetTerritory);
 }
 
-// Destructor: free members, set to NULL no dangling points
+// Destructor free members, set to NULL for no dangling pointers
 Blockade::~Blockade() {
     delete targetTerritory;
     targetTerritory = NULL;
@@ -327,7 +327,7 @@ Blockade& Blockade::operator=(const Blockade& other) {
     return *this;
 }
 
-// Valid: territory given
+// Valid territory given
 bool Blockade::validate() const {
     if (*targetTerritory == "") {
         return false;
@@ -366,7 +366,7 @@ ostream& operator<<(ostream& out, const Blockade& order) {
 
 // Airlift
 
-// Default constructor with invalid  order
+// Default constructor invalid order
 Airlift::Airlift() {
     this->armies = new int(0);
     this->sourceTerritory = new string("");
@@ -387,7 +387,7 @@ Airlift::Airlift(const Airlift& other) : Order(other) {
     this->targetTerritory = new string(*other.targetTerritory);
 }
 
-// Destructor free members set to NULL for no dingling pointers
+// Destructor free members, set to NULL for no dangling pointers
 Airlift::~Airlift() {
     delete armies;
     armies = NULL;
@@ -470,7 +470,7 @@ Negotiate::Negotiate(const Negotiate& other) : Order(other) {
     this->targetPlayer = new string(*other.targetPlayer);
 }
 
-// Destructor free members, set to NULL 
+// Destructor free members, set to NULL for no dangling pointers
 Negotiate::~Negotiate() {
     delete targetPlayer;
     targetPlayer = NULL;
@@ -529,7 +529,7 @@ OrdersList::OrdersList() {
     this->orders = new vector<Order*>();
 }
 
-// Copy constructor with a deep deep copy
+// Copy constructor with a deep copy
 OrdersList::OrdersList(const OrdersList& other) {
     this->orders = new vector<Order*>();
     for (int i = 0; i < other.size(); i++) {
@@ -537,14 +537,14 @@ OrdersList::OrdersList(const OrdersList& other) {
     }
 }
 
-// Destructor: delete orders, then the vector
+// Destructor delete orders, then the vector
 OrdersList::~OrdersList() {
     deleteAllOrders();
     delete orders;
     orders = NULL;
 }
 
-// Assignment operator: delete own orders, then deep copy
+// Assignment operator delete own orders, then deep copy
 OrdersList& OrdersList::operator=(const OrdersList& other) {
     if (this != &other) {
         deleteAllOrders();
@@ -583,7 +583,7 @@ bool OrdersList::move(int from, int to) {
     return true;
 }
 
-// Number of orders 
+// Number of orders
 int OrdersList::size() const {
     return static_cast<int>(orders->size());
 }
@@ -608,7 +608,7 @@ void OrdersList::deleteAllOrders() {
 bool OrdersList::isValidIndex(int index) const {
     if (index < 0 || index >= size()) {
         return false;
-    } 
+    }
     return true;
 }
 

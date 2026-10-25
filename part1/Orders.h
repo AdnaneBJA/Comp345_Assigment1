@@ -30,7 +30,7 @@ protected:
 
 private:
     bool* executed;
-    std::string* effect; 
+    std::string* effect;
 };
 
 // Deploy armies from the reinforcement pool onto one of the player's territories.
@@ -55,7 +55,7 @@ private:
     std::string* targetTerritory;
 };
 
-// Advance to move armies to a neighbouring territory attack if enemy-owned
+// Advance move armies to a neighbouring territory, attack if enemy-owned
 class Advance : public Order {
 public:
     Advance();
@@ -78,7 +78,7 @@ private:
     std::string* targetTerritory;
 };
 
-// Bomb which destroy half the armies on an enemy territory.
+// Bomb destroy half the armies on an enemy territory.
 class Bomb : public Order {
 public:
     Bomb();
@@ -143,7 +143,7 @@ private:
     std::string* targetTerritory;
 };
 
-// Negotiate no attacks between two players this turn diplomacy card.
+// Negotiate no attacks between two players this turn, diplomacy card.
 class Negotiate : public Order {
 public:
     Negotiate();
