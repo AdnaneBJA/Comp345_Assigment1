@@ -31,13 +31,18 @@ class Player {
 
 		// additional methods
 		friend ostream& operator<<(ostream& out, const Player& p);
+		// printing to console
 		void printTerritories();
 		void printTerritories(list<Territory*> inputList);
-		void addTerritory(Territory& terr);
-		void addCard(Cards input);
 		void printCards();
 		void printOrders();
+		// delete pointers inside of lists
 		void deleteTerritories();
+		void deleteOrders();
+		void deleteCards();
+		// adding objects to lists
+		void addTerritory(Territory& terr);
+		void addCard(Cards input);
 
 	// attributes
 	private:
@@ -72,7 +77,7 @@ public:
 	string* type;
 	Cards();
 	Cards(string input);
-	~Cards();
+	void customDeleteCards();
 
 };
 
@@ -81,7 +86,7 @@ class Order {
 public:
 		string* type;
 		Order(string input);
-		~Order();
+		void customDeleteOrders();
 };
 
 

@@ -87,7 +87,6 @@ int main() {
 	cout << endl << "assigned Player" << endl;
 	cout << p3 << endl;
 	p3.printTerritories();
-	cout << endl;
 
 	list<Territory*> l1toAttack = p1.toAttack();
 	list<Territory*> l1ToDefend = p1.toDefend();
@@ -104,8 +103,9 @@ int main() {
 
 	p1.deleteTerritories();
 	p2.deleteTerritories();
-	pCopy.deleteTerritories();
-	p3.deleteTerritories();
+	p1.deleteOrders();
+	p2.deleteOrders();
+	p1.deleteCards();
 
 	return 0;
 }

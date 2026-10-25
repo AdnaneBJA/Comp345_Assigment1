@@ -54,11 +54,8 @@ ostream& operator<<(ostream& out, const Player & p) {
 //assignment Operator
 Player& Player::operator=(const Player& p) {
 
-	for (Territory* terr: *p.territoriesOfPlayer) {
-		Territory coipiedTerr = Territory(*terr);
-		territoriesOfPlayer->push_back(new Territory(coipiedTerr));
-	}
 
+	territoriesOfPlayer = new list<Territory*>(*(p.territoriesOfPlayer));
 	cardsOfPlayer = new list<Cards>(*(p.cardsOfPlayer));
 	ordersOfPlayer = new list<Order>(*(p.ordersOfPlayer));
 	playerID = new int(*(p.playerID));
@@ -176,8 +173,9 @@ Territory::Territory(const Territory &terr) {
 }
 
 
-
+// used to delete the pointers of the territory class when needed and not the objects go out of scope
 void Territory::customDestructorTerritory() {
+
 
 	delete name;
 	delete owner;
@@ -196,11 +194,20 @@ Order::Order(string inputType) {
 	type = new string(inputType);
 }
 
-Order::~Order() {
-	
-	//delete type;
-	//type = nullptr;
 
+
+void Order::customDeleteOrders() {
+
+	delete type;
+	type = nullptr;
+
+}
+
+void Player::deleteOrders() {
+
+	for (Order o: *ordersOfPlayer) {
+		o.customDeleteOrders();
+	}
 }
 
 void Player::printOrders() {
@@ -213,12 +220,17 @@ void Player::printOrders() {
 Cards::Cards(string input) {
 
 	type = new string(input);
-
 }
 
-Cards::~Cards() {
+void Cards::customDeleteCards() {
 
-	//delete type;
-	//type = nullptr;
+	delete type;
+	type = nullptr;
 }
 
+void Player::deleteCards() {
+
+	for (Cards c: *cardsOfPlayer) {
+		c.customDeleteCards();
+	}
+}
