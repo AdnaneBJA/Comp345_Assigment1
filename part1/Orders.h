@@ -56,7 +56,7 @@ private:
     std::string* targetTerritory;
 };
 
-// Advance to move armies to a neighbouring territory (attack if enemy-owned).
+// Advance to move armies to a neighbouring territory attack if enemy-owned)
 class Advance : public Order {
 public:
     Advance();
@@ -121,7 +121,7 @@ private:
     std::string* targetTerritory;
 };
 
-// Airlift move armies between any two own territories (airlift card).
+// Airlift move armies between any two own territories (irlift card.
 class Airlift : public Order {
 public:
     Airlift();
@@ -144,7 +144,7 @@ private:
     std::string* targetTerritory;
 };
 
-// Negotiate no attacks between two players this turn (diplomacy card).
+// Negotiate no attacks between two players this turn diplomacy card.
 class Negotiate : public Order {
 public:
     Negotiate();
@@ -165,7 +165,7 @@ private:
     std::string* targetPlayer;
 };
 
-// OrdersList a player's orders for the turn. Owns its orders (deletes them).
+// OrdersList a player's orders for the turn. Owns its orders and deletes them.
 class OrdersList {
 public:
     OrdersList();
