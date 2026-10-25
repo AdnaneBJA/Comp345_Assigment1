@@ -47,6 +47,11 @@ public:
     Continent* getContinent() const;
     int getContinentId() const;
     int getId() const;
+    std::string getName() const;
+    int getArmies() const;
+    void setArmies(int n);
+    Player* getPlayer() const;
+    void setPlayer(Player* p);
 
     void addNeighbor(Territory* territory);
     void printNeighbors();

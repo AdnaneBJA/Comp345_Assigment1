@@ -29,6 +29,17 @@ add_executable(OrdersDriver
         part1/OrdersDriver.cpp
 )
 
+add_executable(PlayerDriver
+        part1/Player.cpp
+        part1/Player.h
+        part1/PlayerDriver.cpp
+        part1/Map.cpp
+        part1/Map.h
+        part1/Cards.cpp
+        part1/Cards.h
+        part1/Orders.cpp
+        part1/Orders.h
+)
 
 add_executable(MainDriver
         main.cpp)

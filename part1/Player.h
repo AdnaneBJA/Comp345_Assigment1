@@ -1,95 +1,53 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include <list>
+#include <iosfwd>
 #include <string>
-using namespace std; 
+#include <vector>
 
-class Territory;
-class Cards;
-class Order;
+#include "Map.h"
+#include "Cards.h"
+#include "Orders.h"
 
-// implementation of the Player class. 
+// A player of the game. A player owns a collection of territories (from Map.h),
+// a hand of cards (Hand, from Cards.h) and a list of orders (OrdersList, from
+// Orders.h). Every data member is a pointer. The player owns (and deletes) its
+// name, its hand and its orders list, but the territories belong to the Map, so
+// the player only keeps pointers to them and never deletes them.
 class Player {
 
 	//methods
 	public:
 		Player();
+		Player(std::string name);
 		Player(const Player &p);
 		~Player();
 		Player &operator=(const Player& p);
-		static int* counterID;
+		friend std::ostream& operator<<(std::ostream& out, const Player& p);
 
-		//getters	
-		list<Territory*>* getListOfTerritories();
-		list<Cards>* getListofCards();
+		//getters
+		std::string getName() const;
+		std::vector<Territory*> getTerritories() const;
+		Hand* getHand() const;
+		OrdersList* getOrders() const;
 
 		// needed methods
-		list<Territory*> toDefend();
-		list<Territory*> toAttack();
-		void issueOrder(string input);
+		std::vector<Territory*> toDefend();
+		std::vector<Territory*> toAttack();
+		void issueOrder(std::string orderType);
 
-		// additional methods
-		friend ostream& operator<<(ostream& out, const Player& p);
-		// printing to console
-		void printTerritories();
-		void printTerritories(list<Territory*> inputList);
-		void printCards();
-		void printOrders();
-		// delete pointers inside of lists
-		void deleteTerritories();
-		void deleteOrders();
-		void deleteCards();
-		// adding objects to lists
-		void addTerritory(Territory& terr);
-		void addCard(Cards input);
+		// adding a territory to the player
+		void addTerritory(Territory* terr);
+
+		// printing a list of territories to the console
+		static void printTerritories(const std::vector<Territory*>& inputList);
 
 	// attributes
 	private:
-		// setting a list of void pointers so to have more flexibility for later implementations
-		list<Territory*>* territoriesOfPlayer;
-		list<Cards>* cardsOfPlayer;
-		list<Order>* ordersOfPlayer;
-		int* playerID;
+		std::string* name;
+		std::vector<Territory*>* territoriesOfPlayer;
+		Hand* hand;
+		OrdersList* ordersOfPlayer;
 };
-
-
-// temporary Territory logic
-class Territory {
-
-public:
-	string* name;
-	int* armies;
-	list<Territory*>* neighbours;
-	int* owner;
-
-	Territory();
-	Territory(const Territory &terr);
-	Territory(string name);
-	void customDestructorTerritory();
-	Territory(int* id, string* name, int* armies, list<Territory>* neighbours, Player* player);
-
-};
-
-// temporary Cards logic
-class Cards {
-public:
-	string* type;
-	Cards();
-	Cards(string input);
-	void customDeleteCards();
-
-};
-
-// temporary Order logic
-class Order {
-public:
-		string* type;
-		Order(string input);
-		void customDeleteOrders();
-};
-
 
 #endif // PLAYER_H
-
-

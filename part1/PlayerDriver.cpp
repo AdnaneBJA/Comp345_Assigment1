@@ -1,111 +1,96 @@
-#include <iostream>	
+//
+// Part 2 driver: creates players that own territories of a real Map, a Hand of
+// cards drawn from a Deck and an OrdersList, then demonstrates toDefend(),
+// toAttack(), issueOrder(), the copy constructor and the assignment operator.
+//
+
+#include <iostream>
 #include "Player.h"
-#define _CRTDBG_MAP_ALLOC
-#include <cstdlib>
-#include <crtdbg.h>
 
+// Creates a territory with the given id, name and armies and adds it to the map
+// (the map owns it and deletes it).
+Territory* addTerritory(Map& map, Continent* continent, int id, std::string name, int armies) {
+	Territory* terr = new Territory();
+	terr->setTerritoryId(id);
+	terr->setTerritoryName(name);
+	terr->setContinentId(continent->getContinentId());
+	terr->setContinent(continent);
+	terr->setArmies(armies);
+	continent->addTerritory(terr);
+	map.addTerritory(terr);
+	return terr;
+}
 
+// Adds an adjacency in both directions between two territories.
+void connect(Territory* a, Territory* b) {
+	a->addNeighbor(b);
+	b->addNeighbor(a);
+}
 
 int main() {
-	// checking memory leaks 
-	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
+	// a small map: France - Spain - Portugal, France - Italy
+	Map map;
+	Continent* europe = new Continent();
+	europe->setContinentId(1);
+	europe->setName("Europe");
+	map.addContinent(europe);
 
-	// info of territories
-	string country1 = "France";
-	Territory terr1 = Territory(country1);
-	*terr1.armies = 6;
+	Territory* france = addTerritory(map, europe, 1, "France", 6);
+	Territory* spain = addTerritory(map, europe, 2, "Spain", 1);
+	Territory* portugal = addTerritory(map, europe, 3, "Portugal", 7);
+	Territory* italy = addTerritory(map, europe, 4, "Italy", 0);
 
-	string country2 = "Spain";
-	Territory terr2 = Territory(country2);
-	*terr2.armies = 1;
+	connect(france, spain);
+	connect(france, italy);
+	connect(spain, portugal);
 
-	string country3 = "Portugal";
-	Territory terr3 = Territory(country3);
-	*terr3.armies = 7;
+	Deck deck;
 
-	string country4 = "Italy";
-	Territory terr4 = Territory(country4);
-	*terr4.armies = 0;
+	std::cout << "=== 1. Player one owns Spain and Portugal ===" << std::endl;
+	Player p1("Alice");
+	p1.addTerritory(spain);
+	p1.addTerritory(portugal);
+	deck.draw(p1.getHand());
+	deck.draw(p1.getHand());
+	std::cout << p1 << std::endl;
 
-	// France is connected to Spain and Italy
-	terr1.neighbours->push_back(&terr2);
-	terr1.neighbours->push_back(&terr4);
+	std::cout << "=== 2. Player two owns France and Italy ===" << std::endl;
+	Player p2("Bob");
+	p2.addTerritory(france);
+	p2.addTerritory(italy);
+	deck.draw(p2.getHand());
+	std::cout << p2 << std::endl;
 
-	// Spain is connected to France and Portugal
-	terr2.neighbours->push_back(&terr1);
-	terr2.neighbours->push_back(&terr3);
+	std::cout << "=== 3. toDefend() and toAttack() for player one ===" << std::endl;
+	std::cout << "Territories to defend (less than 3 armies):" << std::endl;
+	Player::printTerritories(p1.toDefend());
+	std::cout << "Territories to attack (enemy neighbours):" << std::endl;
+	Player::printTerritories(p1.toAttack());
+	std::cout << std::endl;
 
-	// Portugal is connected to Spain
-	terr3.neighbours->push_back(&terr2);
-
-	// Italy is connected to France
-	terr4.neighbours->push_back(&terr1);
-
-
-	// info of player one
-	// It has Spain and portugal
-	Player p1 = Player();
-	p1.addTerritory(terr2);
-	p1.addTerritory(terr3);
-	cout << "printing player one: " << p1 << endl;
-	p1.printTerritories();
-	cout << endl;
-
-	//adding orders to player one
-	p1.issueOrder("deployment");
+	std::cout << "=== 4. issueOrder() adds orders to player one's list ===" << std::endl;
+	p1.issueOrder("deploy");
 	p1.issueOrder("advance");
+	p1.issueOrder("bomb");
+	p1.issueOrder("blockade");
+	p1.issueOrder("airlift");
+	p1.issueOrder("negotiate");
+	p1.issueOrder("surrender");
+	std::cout << "Orders of player one:" << std::endl << *p1.getOrders() << std::endl;
 
-	// adding cards to player one
-	Cards c1 = Cards("bomb");
-	p1.addCard(c1);
+	std::cout << "=== 5. Copy constructor (deep copy of hand and orders) ===" << std::endl;
+	Player pCopy(p1);
+	pCopy.getOrders()->remove(0);
+	std::cout << "Copy after removing its first order:" << std::endl << pCopy << std::endl;
+	std::cout << "Player one is unchanged:" << std::endl << p1 << std::endl;
 
-	//info of player two
-	// It has France and Italy
-	Player p2 = Player();
-	p2.addTerritory(terr1);
-	p2.addTerritory(terr4);
-	cout << "printing player two: " << p2 << endl;
-	p2.printTerritories();
-	cout << endl;
-
-	// copying player one
-	Player pCopy = Player(p1);
-	cout << "Copied player" << endl;
-	pCopy.printTerritories();
-	pCopy.getListOfTerritories()->pop_front();
-	cout << "after poping" << endl;
-	pCopy.printTerritories();
-	cout << "player one again" << endl;
-	p1.printTerritories();
-
-	cout << endl;
-
-	// assigment operator
+	std::cout << "=== 6. Assignment operator ===" << std::endl;
 	Player p3;
 	p3 = p2;
-	cout << endl << "assigned Player" << endl;
-	cout << p3 << endl;
-	p3.printTerritories();
+	std::cout << "Assigned player:" << std::endl << p3 << std::endl;
 
-	list<Territory*> l1toAttack = p1.toAttack();
-	list<Territory*> l1ToDefend = p1.toDefend();
-
-	cout << "From the perspective of Player one" << endl;
-	cout << "These are the territoires that could be attacked" << endl;
-	p1.printTerritories(l1toAttack);
-	cout << "These are the territoires that could be defended" << endl;
-	p1.printTerritories(l1ToDefend);
-	cout << endl << "orders of player one" << endl;
-	p1.printOrders();
-	cout << "Cards of player one" << endl;
-	p1.printCards();
-
-	p1.deleteTerritories();
-	p2.deleteTerritories();
-	p1.deleteOrders();
-	p2.deleteOrders();
-	p1.deleteCards();
-
+	// the map deletes the territories and continent, each player deletes its
+	// own hand and orders, and the deck deletes the cards left in it
 	return 0;
 }

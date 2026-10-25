@@ -1,87 +1,104 @@
 #include "Player.h"
-#include <list>
-#include <vector>
-#include <string>
+
+#include <algorithm>
 #include <iostream>
-using namespace std;
 
-// initiallization of static member
-// this will be used to keep track of players
-int* Player::counterID = new int(1); 
+// default constructor: a player with a default name, no territories, an empty
+// hand and an empty list of orders
+Player::Player()
+	: name(new std::string("Unnamed player")),
+	  territoriesOfPlayer(new std::vector<Territory*>()),
+	  hand(new Hand()),
+	  ordersOfPlayer(new OrdersList()) {}
 
-// player constructor
-Player::Player() {
+// constructor: a player with the given name, no territories, an empty hand and
+// an empty list of orders
+Player::Player(std::string n)
+	: name(new std::string(n)),
+	  territoriesOfPlayer(new std::vector<Territory*>()),
+	  hand(new Hand()),
+	  ordersOfPlayer(new OrdersList()) {}
 
-	territoriesOfPlayer = new list<Territory*>();
-	cardsOfPlayer = new list<Cards>();
-	ordersOfPlayer = new list<Order>();
-	playerID = new int(*counterID);
-	(*counterID)++;
-}
+// copy constructor: deep-copies the name, the hand and the orders (Hand and
+// OrdersList copy their cards and orders). The territory pointers are copied
+// as-is because the Map owns the territories.
+Player::Player(const Player& p)
+	: name(new std::string(*p.name)),
+	  territoriesOfPlayer(new std::vector<Territory*>(*p.territoriesOfPlayer)),
+	  hand(new Hand(*p.hand)),
+	  ordersOfPlayer(new OrdersList(*p.ordersOfPlayer)) {}
 
-// copy constructor
-Player::Player(const Player& p) {
-
-	territoriesOfPlayer = new list<Territory*>(*(p.territoriesOfPlayer));
-	cardsOfPlayer = new list<Cards>(*(p.cardsOfPlayer));
-	ordersOfPlayer = new list<Order>(*(p.ordersOfPlayer));
-	playerID = new int(*(p.playerID));
-}
-
-//Player destructor
+// destructor: deletes what the player owns (name, territory list, hand and
+// orders). The territories themselves belong to the Map and are not deleted.
 Player::~Player() {
 
+	delete name;
 	delete territoriesOfPlayer;
-	delete cardsOfPlayer;
+	delete hand;
 	delete ordersOfPlayer;
-	delete playerID;
 
+	name = nullptr;
 	territoriesOfPlayer = nullptr;
-	cardsOfPlayer = nullptr;
+	hand = nullptr;
 	ordersOfPlayer = nullptr;
-	playerID = nullptr;
-
 }
 
- //insertion operator overlaod
-ostream& operator<<(ostream& out, const Player & p) {
-
-	out << "Player ID " << *p.playerID <<endl;
-	return out;
-
-}
-
-//assignment Operator
+// assignment operator: copies the other player's values into this player's own
+// memory, like the copy constructor (Hand and OrdersList do the deep copies)
 Player& Player::operator=(const Player& p) {
 
-
-	territoriesOfPlayer = new list<Territory*>(*(p.territoriesOfPlayer));
-	cardsOfPlayer = new list<Cards>(*(p.cardsOfPlayer));
-	ordersOfPlayer = new list<Order>(*(p.ordersOfPlayer));
-	playerID = new int(*(p.playerID));
+	if (this != &p) {
+		*name = *p.name;
+		*territoriesOfPlayer = *p.territoriesOfPlayer;
+		*hand = *p.hand;
+		*ordersOfPlayer = *p.ordersOfPlayer;
+	}
 
 	return *this;
 }
 
+// insertion operator overload: prints the player's name, territories, hand and orders
+std::ostream& operator<<(std::ostream& out, const Player& p) {
 
-// getter of the player's territories
-list<Territory*>* Player::getListOfTerritories(){
-	return territoriesOfPlayer;
+	out << "Player " << *p.name << std::endl;
+	out << "  Territories:";
+	for (Territory* terr: *p.territoriesOfPlayer) {
+		out << " " << terr->getName() << "(" << terr->getArmies() << ")";
+	}
+	out << std::endl;
+	out << "  " << *p.hand << std::endl;
+	out << "  Orders:" << std::endl << *p.ordersOfPlayer;
+	return out;
 }
 
-// getter of the player's cards
-list<Cards>* Player::getListofCards() {
-	return cardsOfPlayer;
+// getter of the player's name
+std::string Player::getName() const {
+	return *name;
+}
+
+// getter of the player's territories
+std::vector<Territory*> Player::getTerritories() const {
+	return *territoriesOfPlayer;
+}
+
+// getter of the player's hand of cards
+Hand* Player::getHand() const {
+	return hand;
+}
+
+// getter of the player's list of orders
+OrdersList* Player::getOrders() const {
+	return ordersOfPlayer;
 }
 
 // this method returns a list of territories that need defence. If a given
-// player territory has less than 3 units then it is added to the list
-list<Territory*> Player::toDefend() {
+// player territory has less than 3 armies then it is added to the list
+std::vector<Territory*> Player::toDefend() {
 
-	list<Territory*> territoriesToDefend;
+	std::vector<Territory*> territoriesToDefend;
 
-	for (Territory *terr: *territoriesOfPlayer) {
-		if (*(*terr).armies < 3) {
+	for (Territory* terr: *territoriesOfPlayer) {
+		if (terr->getArmies() < 3) {
 			territoriesToDefend.push_back(terr);
 		}
 	}
@@ -89,14 +106,16 @@ list<Territory*> Player::toDefend() {
 	return territoriesToDefend;
 }
 
-// this method checks the neighbours of each territory belonging to a player. 
-// If the territory does not belong to the current player, then those territories are added to the territories to be attacked 
-list<Territory*> Player::toAttack() {
+// this method checks the neighbours of each territory belonging to a player.
+// If the territory does not belong to the current player, then it is added to
+// the territories to be attacked (each territory only once)
+std::vector<Territory*> Player::toAttack() {
 
-	list<Territory*> enemyTerritoriesToAttack;
-	for ( Territory* terr: *territoriesOfPlayer) {
-		for (Territory* neighbourTerr: *(*terr).neighbours) {
-			if (*(*neighbourTerr).owner != *this->playerID) {;
+	std::vector<Territory*> enemyTerritoriesToAttack;
+	for (Territory* terr: *territoriesOfPlayer) {
+		for (Territory* neighbourTerr: terr->getNeighbors()) {
+			bool alreadyAdded = std::find(enemyTerritoriesToAttack.begin(), enemyTerritoriesToAttack.end(), neighbourTerr) != enemyTerritoriesToAttack.end();
+			if (neighbourTerr->getPlayer() != this && !alreadyAdded) {
 				enemyTerritoriesToAttack.push_back(neighbourTerr);
 			}
 		}
@@ -105,132 +124,56 @@ list<Territory*> Player::toAttack() {
 	return enemyTerritoriesToAttack;
 }
 
-// this method creates an Order object with the corresponding input and then is sent to the list
-void Player::issueOrder(string input) {
+// this method creates an Order object of the given type (deploy, advance, bomb,
+// blockade, airlift or negotiate) and adds it to the player's list of orders.
+// The targets are taken from toDefend() and toAttack(). An unknown type adds nothing.
+void Player::issueOrder(std::string orderType) {
 
-	Order o1 = Order(input);
-	ordersOfPlayer->push_back(o1);
+	std::vector<Territory*> defend = toDefend();
+	std::vector<Territory*> attack = toAttack();
 
-}
-
-// print territories of player
-void Player::printTerritories(){
-
-	for (Territory *terr: *territoriesOfPlayer) {
-		cout << "name of territory: " << *(*terr).name <<endl;
+	// territories the orders refer to (empty name when there is none, which makes the order invalid)
+	std::string own = territoriesOfPlayer->empty() ? "" : territoriesOfPlayer->front()->getName();
+	std::string ownLast = territoriesOfPlayer->empty() ? "" : territoriesOfPlayer->back()->getName();
+	std::string toProtect = defend.empty() ? own : defend.front()->getName();
+	std::string enemy = attack.empty() ? "" : attack.front()->getName();
+	std::string enemyPlayer = "";
+	if (!attack.empty() && attack.front()->getPlayer() != nullptr) {
+		enemyPlayer = attack.front()->getPlayer()->getName();
 	}
+
+	Order* order = nullptr;
+	if (orderType == "deploy") {
+		order = new Deploy(3, toProtect);
+	} else if (orderType == "advance") {
+		order = new Advance(2, own, enemy);
+	} else if (orderType == "bomb") {
+		order = new Bomb(enemy);
+	} else if (orderType == "blockade") {
+		order = new Blockade(toProtect);
+	} else if (orderType == "airlift") {
+		order = new Airlift(1, own, ownLast);
+	} else if (orderType == "negotiate") {
+		order = new Negotiate(enemyPlayer);
+	} else {
+		std::cout << "Unknown order type: " << orderType << std::endl;
+		return;
+	}
+
+	ordersOfPlayer->add(order);
 }
 
-// print list of territories
-void Player::printTerritories(list<Territory*> inputList) {
+// this method adds a territory to a player and sets the territory's owner to this player
+void Player::addTerritory(Territory* terr) {
+
+	territoriesOfPlayer->push_back(terr);
+	terr->setPlayer(this);
+}
+
+// print a list of territories with their armies
+void Player::printTerritories(const std::vector<Territory*>& inputList) {
 
 	for (Territory* terr: inputList) {
-		cout << *(*terr).name << endl;
-	}
-
-}
-
-// this method adds a territory to a plyer and sets its owner variable to the ID of the player controlling that territory
-void Player::addTerritory(Territory& terr){ 
-
-	territoriesOfPlayer->push_back(&terr);
-	*terr.owner = *this->playerID;
-}
-
-void Player::deleteTerritories() {
-
-	for (Territory* terr: *territoriesOfPlayer) {
-		(*terr).customDestructorTerritory();
-	}
-}
-
-// adding a card to a player
-void Player::addCard(Cards input) {
-	cardsOfPlayer->push_back(input);
-}
-
-void Player::printCards() {
-	for (Cards c: *cardsOfPlayer) {
-		cout << *c.type << endl;
-	}
-}
-
-// temporary constructor for Territory
-Territory::Territory(string n) {
-	cout << "surprise normal" << endl;
-	name = new string(n);
-	owner = new int(0);
-	armies = new int(0);
-	neighbours = new list<Territory*>();
-}
-
-Territory::Territory(const Territory &terr) {
-	cout << "surprise" << endl;
-	name = new string(*terr.name);
-	owner = new int(*terr.owner);
-	armies = new int(*terr.armies);
-	neighbours = new list<Territory*>(*terr.neighbours);
-}
-
-
-// used to delete the pointers of the territory class when needed and not the objects go out of scope
-void Territory::customDestructorTerritory() {
-
-
-	delete name;
-	delete owner;
-	delete armies;
-	delete neighbours;
-
-	name = nullptr;
-	owner = nullptr;
-	armies = nullptr;
-	neighbours = nullptr;
-
-}
-
-//temporary constructor for orders
-Order::Order(string inputType) {
-	type = new string(inputType);
-}
-
-
-
-void Order::customDeleteOrders() {
-
-	delete type;
-	type = nullptr;
-
-}
-
-void Player::deleteOrders() {
-
-	for (Order o: *ordersOfPlayer) {
-		o.customDeleteOrders();
-	}
-}
-
-void Player::printOrders() {
-
-	for (Order o: *ordersOfPlayer) {
-		cout << *o.type << endl;
-	}
-}
-
-Cards::Cards(string input) {
-
-	type = new string(input);
-}
-
-void Cards::customDeleteCards() {
-
-	delete type;
-	type = nullptr;
-}
-
-void Player::deleteCards() {
-
-	for (Cards c: *cardsOfPlayer) {
-		c.customDeleteCards();
+		std::cout << "  " << terr->getName() << " (" << terr->getArmies() << " armies)" << std::endl;
 	}
 }

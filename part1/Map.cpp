@@ -123,6 +123,31 @@ int Territory::getContinentId() const {
     return *continent_id;
 }
 
+// Returns the territory's name.
+std::string Territory::getName() const {
+    return *territory_name;
+}
+
+// Returns the number of armies on this territory.
+int Territory::getArmies() const {
+    return *armies;
+}
+
+// Sets the number of armies on this territory.
+void Territory::setArmies(const int n) {
+    *armies = n;
+}
+
+// Returns the player who owns this territory (nullptr if nobody owns it).
+Player* Territory::getPlayer() const {
+    return player;
+}
+
+// Sets the player who owns this territory. The player is not owned by the territory.
+void Territory::setPlayer(Player* p) {
+    player = p;
+}
+
 // Adds an edge from this territory to an adjacent territory.
 void Territory::addNeighbor(Territory *territory) {
     neighbors->push_back(territory);
