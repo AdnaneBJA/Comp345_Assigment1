@@ -4,11 +4,11 @@
 
 using namespace std;
 
-// Demo for create, validate, move, remove, copy, execute
+// Demo to create, validate, move, remove, copy, execute
 void testOrdersLists() {
     cout << "===== Part 3: Orders list =====" << endl << endl;
 
-    // Create: one of each kind + invalid + extra 
+    // Create one of each kind + invalid + extra 
     OrdersList list;
     list.add(new Deploy(5, "Quebec"));
     list.add(new Advance(3, "Quebec", "Ontario"));
@@ -75,7 +75,7 @@ void testOrdersLists() {
     cout << "Original list (unchanged by the copies):" << endl;
     cout << list << endl;
 
-    // Execute: valid ones get an effect, invalid ones do nothing
+    // Execute valid ones get an effect, invalid ones do nothing
     cout << "Executing every order in the original list:" << endl;
     for (int i = 0; i < list.size(); i++) {
         Order* order = list.get(i);

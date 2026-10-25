@@ -5,9 +5,8 @@
 #include <string>
 #include <vector>
 
-// Every data member is a pointer (assignment rule 1): created with new, freed in the destructor.
 
-// Order: abstract parent of every order type
+// Order abstract parent of every order type
 class Order {
 public:
     Order();
@@ -31,7 +30,7 @@ protected:
 
 private:
     bool* executed;
-    std::string* effect;  // what the order did, set on execute
+    std::string* effect; 
 };
 
 // Deploy armies from the reinforcement pool onto one of the player's territories.
@@ -56,7 +55,7 @@ private:
     std::string* targetTerritory;
 };
 
-// Advance to move armies to a neighbouring territory attack if enemy-owned)
+// Advance to move armies to a neighbouring territory attack if enemy-owned
 class Advance : public Order {
 public:
     Advance();
@@ -121,7 +120,7 @@ private:
     std::string* targetTerritory;
 };
 
-// Airlift move armies between any two own territories (irlift card.
+// Airlift move armies between any two own territories.
 class Airlift : public Order {
 public:
     Airlift();

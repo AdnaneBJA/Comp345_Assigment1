@@ -2,7 +2,6 @@
 
 using namespace std;
 
-// Pointer members: *x reads/writes the value, new creates it, delete frees it.
 
 // Order
 
@@ -18,7 +17,7 @@ Order::Order(const Order& other) {
     this->effect = new string(*other.effect);
 }
 
-// Destructor: free members, set to NULL for no dangling pointers
+// Destructor free members, set to NULL for no dangling pointers
 Order::~Order() {
     delete executed;
     executed = NULL;
@@ -26,7 +25,7 @@ Order::~Order() {
     effect = NULL;
 }
 
-// Assignment operator: copy the values into our own memory
+// Assignment operator copy the values into our own memory
 Order& Order::operator=(const Order& other) {
     if (this != &other) {
         *this->executed = *other.executed;
@@ -62,7 +61,7 @@ ostream& operator<<(ostream& out, const Order& order) {
 
 //Deploy
 
-// Default constructor (invalid order)
+// Default constructor invalid order
 Deploy::Deploy() {
     this->armies = new int(0);
     this->targetTerritory = new string("");
@@ -80,7 +79,7 @@ Deploy::Deploy(const Deploy& other) : Order(other) {
     this->targetTerritory = new string(*other.targetTerritory);
 }
 
-// Destructor: free members, set to NULL for no dangling pointers
+// Destructor free members, set to NULL for no dangling pointers
 Deploy::~Deploy() {
     delete armies;
     armies = NULL;
@@ -182,7 +181,7 @@ Advance& Advance::operator=(const Advance& other) {
     return *this;
 }
 
-// Valid: armies > 0, two different territories. TODO with Player/Map: ownership, adjacency
+// Valid armies > 0, two different territories
 bool Advance::validate() const {
     if (*armies <= 0) {
         return false;
@@ -220,7 +219,7 @@ string Advance::describe() const {
         + " to " + *targetTerritory;
 }
 
-// Print (same as Order)
+// Print same as order
 ostream& operator<<(ostream& out, const Advance& order) {
     const Order& asOrder = order;
     out << asOrder;
@@ -259,7 +258,7 @@ Bomb& Bomb::operator=(const Bomb& other) {
     return *this;
 }
 
-// Valid: territory given. TODO with Player/Map: enemy territory, adjacent to player
+// Valid: territory given
 bool Bomb::validate() const {
     if (*targetTerritory == "") {
         return false;
@@ -313,7 +312,7 @@ Blockade::Blockade(const Blockade& other) : Order(other) {
     this->targetTerritory = new string(*other.targetTerritory);
 }
 
-// Destructor: free members, set to NULL  for no dangling points
+// Destructor: free members, set to NULL no dangling points
 Blockade::~Blockade() {
     delete targetTerritory;
     targetTerritory = NULL;
@@ -328,7 +327,7 @@ Blockade& Blockade::operator=(const Blockade& other) {
     return *this;
 }
 
-// Valid: territory given. TODO with Player: player owns territory
+// Valid: territory given
 bool Blockade::validate() const {
     if (*targetTerritory == "") {
         return false;
@@ -388,7 +387,7 @@ Airlift::Airlift(const Airlift& other) : Order(other) {
     this->targetTerritory = new string(*other.targetTerritory);
 }
 
-// Destructor: free members, set to NULL for no dingling pointers
+// Destructor free members set to NULL for no dingling pointers
 Airlift::~Airlift() {
     delete armies;
     armies = NULL;
@@ -409,7 +408,7 @@ Airlift& Airlift::operator=(const Airlift& other) {
     return *this;
 }
 
-// Valid: armies > 0, two different territories. TODO with Player: player owns both
+// Valid armies > 0, two different territories
 bool Airlift::validate() const {
     if (*armies <= 0) {
         return false;
@@ -447,7 +446,7 @@ string Airlift::describe() const {
         + " to " + *targetTerritory;
 }
 
-// Print (same as Order)
+// Print same as Order
 ostream& operator<<(ostream& out, const Airlift& order) {
     const Order& asOrder = order;
     out << asOrder;
@@ -456,7 +455,7 @@ ostream& operator<<(ostream& out, const Airlift& order) {
 
 // Negotiate
 
-// Default constructor (invalid order)
+// Default constructor
 Negotiate::Negotiate() {
     this->targetPlayer = new string("");
 }
@@ -471,7 +470,7 @@ Negotiate::Negotiate(const Negotiate& other) : Order(other) {
     this->targetPlayer = new string(*other.targetPlayer);
 }
 
-// Destructor: free members, set to NULL (no dangling pointers)
+// Destructor free members, set to NULL 
 Negotiate::~Negotiate() {
     delete targetPlayer;
     targetPlayer = NULL;
@@ -486,7 +485,7 @@ Negotiate& Negotiate::operator=(const Negotiate& other) {
     return *this;
 }
 
-// Valid: player given.
+// Valid player given.
 bool Negotiate::validate() const {
     if (*targetPlayer == "") {
         return false;
@@ -516,7 +515,7 @@ string Negotiate::describe() const {
     return "negotiate with " + *targetPlayer;
 }
 
-// Print (same as Order)
+// Print same as order
 ostream& operator<<(ostream& out, const Negotiate& order) {
     const Order& asOrder = order;
     out << asOrder;
@@ -525,7 +524,7 @@ ostream& operator<<(ostream& out, const Negotiate& order) {
 
 // OrdersList
 
-// Default constructor: empty list
+// Default constructor with empty list
 OrdersList::OrdersList() {
     this->orders = new vector<Order*>();
 }
@@ -584,7 +583,7 @@ bool OrdersList::move(int from, int to) {
     return true;
 }
 
-// Number of orders (cast: vector size isn't an int)
+// Number of orders 
 int OrdersList::size() const {
     return static_cast<int>(orders->size());
 }
@@ -605,7 +604,7 @@ void OrdersList::deleteAllOrders() {
     orders->clear();
 }
 
-// Index in range?
+// Index in range
 bool OrdersList::isValidIndex(int index) const {
     if (index < 0 || index >= size()) {
         return false;
