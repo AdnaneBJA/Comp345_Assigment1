@@ -23,6 +23,12 @@ add_executable(CardsDriver
         part1/Orders.h
 )
 
+add_executable(OrdersDriver
+        part1/Orders.cpp
+        part1/Orders.h
+        part1/OrdersDriver.cpp
+)
+
 
 add_executable(MainDriver
         main.cpp)
