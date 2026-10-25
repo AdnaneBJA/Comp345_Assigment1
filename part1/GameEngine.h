@@ -33,7 +33,7 @@ public:
     friend std::ostream& operator<<(std::ostream& out, const GameEngine& engine);
 
 private:
-    State currentState;
+    State* currentState;
     static std::string stateName(State state);
     // store the next state in result
     bool nextState(const std::string& command, State& result) const;
