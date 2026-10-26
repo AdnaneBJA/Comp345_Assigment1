@@ -5,6 +5,7 @@
 
 #include "Cards.h"
 
+// Runs the deck/hand demonstration.
 int main() {
     std::cout << "=== 1. Create a deck with every kind of card ===" << std::endl;
     Deck deck;

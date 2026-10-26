@@ -105,7 +105,7 @@ bool GameEngine::processCommand(const std::string& command) {
     return true;
 }
 
-
+// Returns true once the engine reaches the End state.
 bool GameEngine::isFinished() const {
     return *currentState == State::End;
 }

@@ -27,6 +27,7 @@ void connect(Territory* a, Territory* b) {
 	b->addNeighbor(a);
 }
 
+// Runs the Player demonstration.
 int main() {
 
 	// a small map: France - Spain - Portugal, France - Italy
