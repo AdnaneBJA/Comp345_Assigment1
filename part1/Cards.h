@@ -9,9 +9,10 @@
 //I declared them before because cards doesnt see hand or deck.
 class Hand;        // defined below
 class Deck;        // defined below
+class Player; // Only needs to know that player exists
 
 // The five kinds of Warzone cards.
-enum class CardType{ Bomb, Reinforcement, Blockade, Airlift, Diplomacy };
+enum class CardType { Bomb, Reinforcement, Blockade, Airlift, Diplomacy };
 
 // A card of one of the five types. Playing it creates the matching order.
 class Card {
@@ -22,7 +23,7 @@ public:
 	Card& operator=(const Card& other);
 	friend std::ostream& operator<<(std::ostream& os, const Card& card);
 	CardType getType() const;
-	void play(Hand* hand, Deck* deck, OrdersList* orders);
+	void play(Player* player, Deck* deck);
 private:
 	CardType* type;
 };
@@ -53,7 +54,7 @@ public:
 	friend std::ostream& operator<<(std::ostream& os, const Deck& deck);
 	void addCard(Card* card);
 	void removeCard(Card* card);
-	void draw(Hand* hand);
+	Card* draw(Hand* hand);
 private:
 	std::vector<Card*>* cards;
 };

@@ -21,6 +21,10 @@ add_executable(CardsDriver
         part1/CardsDriver.cpp
         part1/Orders.cpp
         part1/Orders.h
+        part1/Player.cpp
+        part1/Player.h
+        part1/Map.cpp
+        part1/Map.h
 )
 
 add_executable(OrdersDriver
