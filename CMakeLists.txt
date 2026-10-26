@@ -45,5 +45,11 @@ add_executable(PlayerDriver
         part1/Orders.h
 )
 
+add_executable(GameEngineDriver
+        part1/GameEngine.cpp
+        part1/GameEngine.h
+        part1/GameEngineDriver.cpp
+)
+
 add_executable(MainDriver
         main.cpp)
