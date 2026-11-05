@@ -29,6 +29,8 @@ public:
     std::string getStateName() const;
     bool processCommand(const std::string& command);
     bool isFinished() const;
+    // move the engine to a new state (used with the CommandProcessor)
+    void transition(State newState);
     // print the current state
     friend std::ostream& operator<<(std::ostream& out, const GameEngine& engine);
 

@@ -1,0 +1,20 @@
+validatemap
+loadmap
+loadmap risk.map
+loadmap canada.map
+addplayer Alice
+validatemap
+gamestart
+addplayer
+addplayer Alice
+addplayer Bob
+fly
+gamestart
+loadmap risk.map
+replay
+loadmap bigeurope.map
+validatemap
+addplayer Carol
+addplayer Dave
+gamestart
+quit
