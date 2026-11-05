@@ -15,11 +15,11 @@
 
 #include "Map.h"
 
-// Folder holding the .map files. CMake sets it to the absolute path of part1/maps/
+// Folder holding the .map files. CMake sets it to the absolute path of part2/maps/
 // so the driver works from any working directory; it can also be passed as the
 // first command-line argument.
 #ifndef MAPS_DIR
-#define MAPS_DIR "part1/maps/"
+#define MAPS_DIR "part2/maps/"
 #endif
 
 // One map file to test and whether it is expected to be accepted. Every data

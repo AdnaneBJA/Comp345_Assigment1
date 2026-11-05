@@ -110,6 +110,13 @@ bool GameEngine::isFinished() const {
     return *currentState == State::End;
 }
 
+// Moves the engine to the given state and prints the transition.
+void GameEngine::transition(State newState) {
+    const std::string previous = getStateName();
+    *currentState = newState;
+    std::cout << "Transition: " << previous << " -> " << getStateName() << "\n";
+}
+
 // Print the current state of the engine
 std::ostream& operator<<(std::ostream& out, const GameEngine& engine) {
     out << "GameEngine state: " << engine.getStateName();
